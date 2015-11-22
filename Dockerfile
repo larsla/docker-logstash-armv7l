@@ -23,6 +23,19 @@ RUN \
 	tar -zxf /tmp/logstash.tar.gz; \
 	rm /tmp/logstash.tar.gz
 
+# fix libjffi problem on arm
+RUN \
+    apt-get install -y ant git gcc make; \
+    cd /tmp; \
+    git clone --depth 1 https://github.com/jnr/jffi.git; \
+    cd jffi; \
+    ant jar; \
+    cp -f build/jni/libjffi-1.2.so /logstash-2.0.0/vendor/jruby/lib/jni/arm-Linux/; \
+    cd; \
+    rm -Rf /tmp/jffi
+
+USER root
+
 ADD conf /conf
 
 ENV ES_HEAP_SIZE 512M
